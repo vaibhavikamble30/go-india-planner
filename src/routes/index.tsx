@@ -217,6 +217,25 @@ function TravelCard({ title, travel }: { title: string; travel: Itinerary["trave
         <RouteIcon className="h-3 w-3" /> {travel.mode}
       </p>
       <p className="mt-3 text-sm leading-relaxed text-foreground">{travel.details}</p>
+      {travel.options?.length > 0 && (
+        <ul className="mt-4 space-y-3 border-t border-border pt-4">
+          {travel.options.map((opt, i) => (
+            <li key={i} className="rounded-xl bg-secondary/60 p-3">
+              <div className="flex flex-wrap items-baseline gap-x-2">
+                <span className="text-xs font-semibold tracking-wide text-primary uppercase">{opt.mode}</span>
+                <span className="min-w-0 text-sm font-medium text-foreground">{opt.name}</span>
+              </div>
+              <p className="mt-1.5 text-sm text-foreground">
+                {opt.departure} <span className="text-muted-foreground">&rarr;</span> {opt.arrival}
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {opt.duration} · {opt.estimatedCost}
+              </p>
+            </li>
+          ))}
+        </ul>
+      )}
+
       <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-border pt-3 text-sm text-muted-foreground">
         <span className="inline-flex items-center gap-1.5">
           <Clock className="h-4 w-4 text-primary" /> {travel.duration}
@@ -226,6 +245,7 @@ function TravelCard({ title, travel }: { title: string; travel: Itinerary["trave
           <span className="font-semibold text-foreground">{travel.estimatedCost}</span>
         </span>
       </div>
+      <p className="mt-2 text-xs text-muted-foreground">Timings are indicative — please reconfirm before booking.</p>
     </article>
   );
 }
