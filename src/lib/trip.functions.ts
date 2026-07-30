@@ -4,6 +4,7 @@ import { z } from "zod";
 import { createLovableAiGatewayProvider } from "./ai-gateway.server";
 
 const PlanInput = z.object({
+  origin: z.string(),
   city: z.string(),
   days: z.number(),
   budget: z.number(),
@@ -19,9 +20,19 @@ const DaySchema = z.object({
   estimatedCost: z.string(),
 });
 
+const TravelSchema = z.object({
+  mode: z.string(),
+  details: z.string(),
+  duration: z.string(),
+  estimatedCost: z.string(),
+});
+
 const ItinerarySchema = z.object({
+  origin: z.string(),
   city: z.string(),
   summary: z.string(),
+  travelThere: TravelSchema,
+  travelBack: TravelSchema,
   days: z.array(DaySchema),
 });
 
@@ -35,7 +46,8 @@ export const planTrip = createServerFn({ method: "POST" })
 
     const gateway = createLovableAiGatewayProvider(key);
 
-    const prompt = `Plan a ${data.days}-day trip to ${data.city}, India with a budget of approximately Rs ${data.budget} per person per day.
+    const prompt = `Plan a ${data.days}-day trip from ${data.origin} to ${data.city}, India with a budget of approximately Rs ${data.budget} per person per day.
+Include travel details for getting from ${data.origin} to ${data.city} (travelThere) and the return journey (travelBack): best mode of transport (train/flight/bus/car), specific route or named trains/airports, journey duration and estimated one-way cost like "Rs 1,800".
 Return exactly ${data.days} days. For each day give a short catchy title, a morning activity, an afternoon activity, an evening activity, food recommendations (2-3 named local dishes or eateries), and an estimated cost for that day written like "Rs 2,400".
 Keep each field to one or two concise sentences. Use real, well-known places in ${data.city}. Keep the total daily cost close to the stated budget. Write a one-sentence summary of the whole trip.`;
 
