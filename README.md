@@ -1,24 +1,58 @@
-# India Trip Planner
+#  AI Trip Planner — India
 
-Build a simple AI trip planner web app for India. It should have: - A home screen with inputs: City, Number of days, Budget per day - A "Plan my trip" button - An output screen showing a clean day-by-day itinerary - Each day should show: Morning activity, Afternoon activity, Evening activity, Food recommendations, Estimated cost - Clean, minimal design. White background with orange accents (India travel feel) - Mobile friendly layout
+An AI-powered web app that turns a simple prompt — starting city, destination, number of days, and daily budget — into a complete, ready-to-follow day-by-day travel itinerary for India.
 
-This project was built with [Lovable](https://lovable.dev).
+##What it does
 
-## Build with Lovable
+Instead of manually researching routes, attractions, food spots, and budgets across a dozen tabs, users just fill in:
+- **Starting from** (e.g. Pune)
+- **Going to** (e.g. Jaipur)
+- **Number of days**
+- **Budget per day (₹)**
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/9a367528-8049-4dc1-a9d9-2a0602ed2f42).
+...and get back a clean itinerary with, for each day:
+- 🌅 Morning activity
+- ☀️ Afternoon activity
+- 🌆 Evening activity
+- 🍛 Food recommendations
+- 💰 Estimated cost
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+##  Design
 
-## Development
+Clean, minimal UI with a white background and orange accents — inspired by the warmth and color of Indian travel. Fully mobile-friendly.
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+##  Built With
 
-```sh
-git clone <this-repository-url>
-cd <repository-name>
+- [Lovable](https://lovable.dev/) — AI-powered app builder
+- React + Vite (via Lovable's default stack)
+- Tailwind CSS
+
+## 🚀 Live Demo
+
+[https://go-india-planner.lovable.app]
+
+## 📸 Screenshots
+
+[<img width="913" height="775" alt="Screenshot 2026-07-30 134120" src="https://github.com/user-attachments/assets/39e17cd4-d037-4979-9627-8e8d04b68911" />
+<img width="896" height="841" alt="Screenshot 2026-07-30 134249" src="https://github.com/user-attachments/assets/f8285d31-3034-4fc4-ad2a-1d2d49108dbb" />
+<img width="667" height="855" alt="Screenshot 2026-07-30 153828" src="https://github.com/user-attachments/assets/1547ae1d-71ca-4a9b-9b62-03ded3c89703" />
+<img width="661" height="850" alt="Screenshot 2026-07-30 153917" src="https://github.com/user-attachments/assets/2787f867-3364-4f25-9da4-8302b21ea5fd" />
+]
+
+##  Running Locally
+
+Requires [Node.js and npm](https://github.com/nvm-sh/nvm#installing-and-updating).
+
+\`\`\`bash
+git clone https://github.com/vaibhavikamble30/go-india-planner.git
+cd go-india-planner
 npm i
 npm run dev
-```
+\`\`\`
+
+## ✍️ About This Project
+
+Built as a hands-on exploration of AI-assisted app development — going from a natural-language prompt to a working, deployed product using Lovable, with the codebase synced and version-controlled on GitHub.
+
+---
+*This project was built with [Lovable](https://lovable.dev/) and is continuously synced to this GitHub repository.*
