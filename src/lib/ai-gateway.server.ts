@@ -8,3 +8,5 @@ export function createLovableAiGatewayProvider(apiKey: string) {
     includeUsage: true,
     supportsStructuredOutputs: true,
   });
+}
+
