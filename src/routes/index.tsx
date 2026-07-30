@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
-import { Sunrise, Sun, Moon, UtensilsCrossed, Wallet, MapPin, Loader2, ArrowLeft } from "lucide-react";
+import { Sunrise, Sun, Moon, UtensilsCrossed, Wallet, MapPin, Loader2, ArrowLeft, Plane, Clock, Route as RouteIcon } from "lucide-react";
 import { planTrip, type Itinerary } from "@/lib/trip.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,6 +28,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Index() {
+  const [origin, setOrigin] = useState("");
   const [city, setCity] = useState("");
   const [days, setDays] = useState("3");
   const [budget, setBudget] = useState("2500");
@@ -35,7 +36,7 @@ function Index() {
 
   const planTripFn = useServerFn(planTrip);
   const mutation = useMutation({
-    mutationFn: (vars: { city: string; days: number; budget: number }) =>
+    mutationFn: (vars: { origin: string; city: string; days: number; budget: number }) =>
       planTripFn({ data: vars }),
     onSuccess: (data) => setTrip(data),
   });
@@ -65,6 +66,7 @@ function Index() {
           onSubmit={(e) => {
             e.preventDefault();
             mutation.mutate({
+              origin: origin.trim(),
               city: city.trim(),
               days: Math.max(1, Math.min(10, Number(days) || 1)),
               budget: Math.max(200, Number(budget) || 1000),
@@ -72,7 +74,18 @@ function Index() {
           }}
         >
           <div className="space-y-2">
-            <Label htmlFor="city">City</Label>
+            <Label htmlFor="origin">Starting from</Label>
+            <Input
+              id="origin"
+              required
+              placeholder="Delhi, Mumbai, Bengaluru…"
+              value={origin}
+              onChange={(e) => setOrigin(e.target.value)}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="city">Going to</Label>
             <Input
               id="city"
               required
@@ -145,9 +158,16 @@ function ItineraryView({ trip, onBack }: { trip: Itinerary; onBack: () => void }
           <p className="text-xs font-medium tracking-widest uppercase opacity-90">
             {trip.days.length} day itinerary
           </p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-tight">{trip.city}</h1>
+          <h1 className="mt-2 text-3xl font-semibold tracking-tight">
+            {trip.origin} <span className="opacity-70">&rarr;</span> {trip.city}
+          </h1>
           <p className="mt-3 text-sm opacity-95">{trip.summary}</p>
         </header>
+
+        <div className="mt-6 grid gap-5 sm:grid-cols-2">
+          <TravelCard title={`${trip.origin} to ${trip.city}`} travel={trip.travelThere} />
+          <TravelCard title={`${trip.city} to ${trip.origin}`} travel={trip.travelBack} />
+        </div>
 
         <div className="mt-6 space-y-5">
           {trip.days.map((day) => (
@@ -180,6 +200,33 @@ function ItineraryView({ trip, onBack }: { trip: Itinerary; onBack: () => void }
         </div>
       </div>
     </main>
+  );
+}
+
+function TravelCard({ title, travel }: { title: string; travel: Itinerary["travelThere"] }) {
+  return (
+    <article
+      className="rounded-2xl border border-border bg-card p-5"
+      style={{ boxShadow: "var(--shadow-soft)" }}
+    >
+      <div className="flex items-center gap-2">
+        <Plane className="h-4 w-4 shrink-0 text-primary" />
+        <h3 className="min-w-0 text-sm font-semibold text-foreground">{title}</h3>
+      </div>
+      <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-accent px-2.5 py-1 text-xs font-medium text-accent-foreground">
+        <RouteIcon className="h-3 w-3" /> {travel.mode}
+      </p>
+      <p className="mt-3 text-sm leading-relaxed text-foreground">{travel.details}</p>
+      <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-border pt-3 text-sm text-muted-foreground">
+        <span className="inline-flex items-center gap-1.5">
+          <Clock className="h-4 w-4 text-primary" /> {travel.duration}
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <Wallet className="h-4 w-4 text-primary" />
+          <span className="font-semibold text-foreground">{travel.estimatedCost}</span>
+        </span>
+      </div>
+    </article>
   );
 }
 
