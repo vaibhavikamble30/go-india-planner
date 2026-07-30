@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Trip Planner — India</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1B2A4A;
+    --sandstone:#EDE3D0;
+    --sandstone-dark:#DCCEAF;
+    --marigold:#E8A33D;
+    --terracotta:#C1502E;
+    --maroon:#6B1E23;
+    --paper:#F7F1E3;
+    --line: rgba(27,42,74,0.18);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--sandstone);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    line-height:1.55;
+  }
+  .wrap{max-width:920px;margin:0 auto;padding:0 28px;}
+  h1,h2,h3{font-family:'Fraunces',serif;margin:0;letter-spacing:-0.01em;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    text-transform:uppercase;
+    letter-spacing:.14em;
+    font-size:.72rem;
+    color:var(--terracotta);
+    font-weight:600;
+  }
+
+  /* HERO — boarding pass style */
+  header.hero{padding:64px 0 40px;}
+  .ticket{
+    background:var(--paper);
+    border:1.5px solid var(--ink);
+    border-radius:4px;
+    position:relative;
+    display:grid;
+    grid-template-columns: 1fr auto;
+    overflow:hidden;
+  }
+  .ticket::after{
+    content:"";
+    position:absolute;
+    right:190px;top:0;bottom:0;
+    border-left:2px dashed var(--line);
+  }
+  .ticket-main{padding:40px 44px;}
+  .ticket-main h1{font-size:2.6rem;line-height:1.05;font-weight:600;margin-bottom:14px;}
+  .ticket-main p{max-width:56ch;color:#3a3a3a;font-size:1rem;}
+  .ticket-stub{
+    background:var(--ink);
+    color:var(--paper);
+    width:190px;
+    padding:28px 22px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+  }
+  .stub-row{margin-bottom:16px;}
+  .stub-row .label{font-family:'IBM Plex Mono';font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;opacity:.6;}
+  .stub-row .val{font-family:'IBM Plex Mono';font-size:.95rem;color:var(--marigold);}
+
+  /* SECTION generic */
+  section{padding:56px 0;border-top:1px solid var(--line);}
+  section > .eyebrow{margin-bottom:10px;display:block;}
+  section h2{font-size:1.7rem;font-weight:600;margin-bottom:8px;}
+  section .lede{color:#4a4a4a;max-width:62ch;margin-bottom:32px;}
+
+  /* PROBLEM */
+  .problem-card{
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:28px 32px;
+  }
+
+  /* INPUT MOCK + TRANSPORT */
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:24px;}
+  .mock-form{
+    background:var(--ink);color:var(--paper);border-radius:10px;padding:26px 26px 22px;
+  }
+  .mock-form .title{font-family:'Fraunces';font-size:1.05rem;margin-bottom:4px;}
+  .mock-form .sub{font-size:.8rem;opacity:.65;margin-bottom:18px;}
+  .field{margin-bottom:12px;}
+  .field label{display:block;font-family:'IBM Plex Mono';font-size:.62rem;text-transform:uppercase;letter-spacing:.08em;opacity:.6;margin-bottom:4px;}
+  .field .box{background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.25);border-radius:5px;padding:9px 12px;font-size:.9rem;font-family:'IBM Plex Mono';}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .btn{
+    margin-top:8px;background:var(--marigold);color:var(--ink);text-align:center;
+    padding:11px;border-radius:5px;font-weight:600;font-size:.9rem;font-family:'Inter';
+  }
+
+  .transport-table{width:100%;border-collapse:collapse;font-size:.85rem;}
+  .transport-table th{
+    font-family:'IBM Plex Mono';font-size:.65rem;text-transform:uppercase;letter-spacing:.08em;
+    text-align:left;color:var(--terracotta);padding:8px 10px;border-bottom:1.5px solid var(--ink);
+  }
+  .transport-table td{padding:10px;border-bottom:1px solid var(--line);}
+  .transport-table td.cost{font-family:'IBM Plex Mono';color:var(--maroon);font-weight:600;white-space:nowrap;}
+  .transport-note{font-size:.75rem;color:#6a6a6a;margin-top:10px;font-style:italic;}
+
+  /* ROUTE LINE — signature element for itinerary */
+  .route{position:relative;margin-top:20px;}
+  .route::before{
+    content:"";position:absolute;left:23px;top:14px;bottom:14px;width:2px;
+    background:repeating-linear-gradient(var(--ink) 0 8px, transparent 8px 14px);
+  }
+  .stop{position:relative;padding-left:64px;margin-bottom:38px;}
+  .stop:last-child{margin-bottom:0;}
+  .stop-marker{
+    position:absolute;left:0;top:0;width:48px;height:48px;border-radius:50%;
+    background:var(--ink);color:var(--marigold);display:flex;align-items:center;justify-content:center;
+    font-family:'IBM Plex Mono';font-weight:600;font-size:1rem;border:3px solid var(--sandstone);
+    box-shadow:0 0 0 1.5px var(--ink);
+  }
+  .stop-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;flex-wrap:wrap;gap:8px;}
+  .stop-head h3{font-size:1.2rem;font-weight:600;}
+  .stop-cost{font-family:'IBM Plex Mono';font-size:.8rem;background:var(--terracotta);color:var(--paper);padding:3px 10px;border-radius:20px;}
+  .stop-body{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:18px 22px;}
+  .stop-part{margin-bottom:10px;font-size:.92rem;}
+  .stop-part:last-child{margin-bottom:0;}
+  .stop-part .k{font-family:'IBM Plex Mono';font-size:.65rem;text-transform:uppercase;letter-spacing:.08em;color:var(--terracotta);margin-right:6px;}
+  .stop-food{border-top:1px dashed var(--line);margin-top:12px;padding-top:12px;font-size:.88rem;color:#3a3a3a;}
+
+  /* BUDGET */
+  .budget-table{width:100%;border-collapse:collapse;}
+  .budget-table td{padding:10px 12px;border-bottom:1px solid var(--line);font-size:.9rem;}
+  .budget-table td:last-child{text-align:right;font-family:'IBM Plex Mono';color:var(--maroon);font-weight:600;}
+  .budget-table tr.total td{border-top:2px solid var(--ink);border-bottom:none;font-weight:700;padding-top:14px;}
+  .avg-check{
+    margin-top:16px;background:var(--paper);border:1px dashed var(--terracotta);border-radius:8px;
+    padding:14px 18px;font-size:.85rem;font-family:'IBM Plex Mono';
+  }
+
+  /* FEATURES */
+  .feat-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+  .feat{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:18px 20px;}
+  .feat .num{font-family:'IBM Plex Mono';color:var(--marigold);background:var(--ink);width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;margin-bottom:10px;}
+  .feat h3{font-size:1rem;font-weight:600;margin-bottom:6px;}
+  .feat p{font-size:.85rem;color:#4a4a4a;margin:0;}
+
+  .stack-row{display:flex;flex-wrap:wrap;gap:10px;}
+  .chip{
+    font-family:'IBM Plex Mono';font-size:.75rem;background:var(--ink);color:var(--paper);
+    padding:6px 14px;border-radius:20px;
+  }
+
+  footer{padding:44px 0 60px;}
+  .tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;}
+  .tag{border:1px solid var(--maroon);color:var(--maroon);font-family:'IBM Plex Mono';font-size:.72rem;padding:4px 12px;border-radius:20px;}
+  .foot-meta{font-size:.8rem;color:#6a6a6a;margin-top:22px;}
+
+  @media (max-width:640px){
+    .ticket{grid-template-columns:1fr;}
+    .ticket::after{display:none;}
+    .ticket-stub{width:100%;flex-direction:row;flex-wrap:wrap;border-top:2px dashed var(--line);}
+    .grid-2, .feat-grid{grid-template-columns:1fr;}
+    .ticket-main h1{font-size:2rem;}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header class="hero">
+    <div class="ticket">
+      <div class="ticket-main">
+        <span class="eyebrow">Product Case Study</span>
+        <h1>AI Trip Planner<br>— India</h1>
+        <p>Planning a trip usually means twelve browser tabs, three group-chat debates, and a spreadsheet nobody updates. This tool turns "Pune to Jaipur, 4 days, ₹2,500/day" into a complete day-by-day plan — routes, costs, food, and all — in one pass.</p>
+      </div>
+      <div class="ticket-stub">
+        <div>
+          <div class="stub-row">
+            <div class="label">From</div>
+            <div class="val">PUNE</div>
+          </div>
+          <div class="stub-row">
+            <div class="label">To</div>
+            <div class="val">JAIPUR</div>
+          </div>
+        </div>
+        <div>
+          <div class="stub-row">
+            <div class="label">Days</div>
+            <div class="val">04</div>
+          </div>
+          <div class="stub-row">
+            <div class="label">Budget/day</div>
+            <div class="val">₹2,500</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section id="problem">
+    <span class="eyebrow">01 — Problem Statement</span>
+    <h2>Trip planning is stressful because the work is scattered</h2>
+    <div class="problem-card">
+      <p style="margin:0;color:#3a3a3a;">Travelers searching for a single trip typically bounce across multiple sites to shortlist destinations, string together a day-by-day itinerary, estimate a realistic budget, and dig up the food and local spots worth actually visiting. The AI Trip Planner collapses that into one step: it takes a traveler's starting point, destination, trip length, and daily budget, and generates a personalized, ready-to-follow plan.</p>
+    </div>
+  </section>
+
+  <section id="input">
+    <span class="eyebrow">02 — How It Works</span>
+    <h2>One form in, one itinerary out</h2>
+    <p class="lede">The traveler enters four things. The planner returns transport options, a day-by-day route, food picks, and a running budget check against what they told us they wanted to spend.</p>
+    <div class="grid-2">
+      <div class="mock-form">
+        <div class="title">Plan your safar.</div>
+        <div class="sub">Tell us where you're headed and we'll build a day-by-day itinerary that fits your budget.</div>
+        <div class="field"><label>Starting from</label><div class="box">pune</div></div>
+        <div class="field"><label>Going to</label><div class="box">jaipur</div></div>
+        <div class="field-row">
+          <div class="field"><label>Number of days</label><div class="box">4</div></div>
+          <div class="field"><label>Budget / day (₹)</label><div class="box">2500</div></div>
+        </div>
+        <div class="btn">Plan my trip →</div>
+      </div>
+      <div>
+        <table class="transport-table">
+          <tr><th>Mode</th><th>Route</th><th>Duration</th><th>Cost</th></tr>
+          <tr><td>Train</td><td class="mono" style="font-size:.75rem;">12939 SF Express<br>17:30 PUNE → 14:40 JP</td><td>21h 10m</td><td class="cost">₹1,850</td></tr>
+          <tr><td>Flight</td><td class="mono" style="font-size:.75rem;">IndiGo 6E 6103<br>02:15 PNQ → 04:00 JAI</td><td>1h 45m</td><td class="cost">₹4,500</td></tr>
+          <tr><td>Bus</td><td class="mono" style="font-size:.75rem;">Hans Sleeper<br>12:00 Swargate → 11:30 Sindhi Camp</td><td>23h 30m</td><td class="cost">₹1,850</td></tr>
+        </table>
+        <div class="transport-note">Timings are indicative — please reconfirm before booking.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="itinerary">
+    <span class="eyebrow">03 — Sample Output</span>
+    <h2>4-day Jaipur itinerary, generated for this exact input</h2>
+    <p class="lede">Each stop on the route below is one full day of the plan — the same day titles, structure, and per-day estimate the tool returns, averaging out to the ₹2,500/day the traveler asked for.</p>
+
+    <div class="route">
+      <div class="stop">
+        <div class="stop-marker">1</div>
+        <div class="stop-head"><h3>Royal Heritage &amp; Majestic Forts</h3><span class="stop-cost">₹2,600</span></div>
+        <div class="stop-body">
+          <div class="stop-part"><span class="k">Morning</span>Explore the grand Amer Fort with a guided tour of its complex.</div>
+          <div class="stop-part"><span class="k">Afternoon</span>Visit Jaigarh Fort to view the massive Jaivana Cannon amid the Aravalli hills.</div>
+          <div class="stop-part"><span class="k">Evening</span>Stop by Jal Mahal for sunset photos over Man Sagar Lake.</div>
+          <div class="stop-food"><strong>Food:</strong> Dal Baati Churma at Laxmi Misthan Bhandar (LMB).</div>
+        </div>
+      </div>
+
+      <div class="stop">
+        <div class="stop-marker">2</div>
+        <div class="stop-head"><h3>Pink City Landmarks &amp; Bazaars</h3><span class="stop-cost">₹2,500</span></div>
+        <div class="stop-body">
+          <div class="stop-part"><span class="k">Morning</span>Photograph the iconic honeycomb façade of Hawa Mahal and tour the majestic City Palace complex.</div>
+          <div class="stop-part"><span class="k">Afternoon</span>Discover ancient astronomical instruments at Jantar Mantar, a UNESCO World Heritage Site.</div>
+          <div class="stop-part"><span class="k">Evening</span>Stroll through Johari Bazaar and Bapu Bazaar for colorful Rajasthani textiles and handicrafts.</div>
+          <div class="stop-food"><strong>Food:</strong> Laal Maas at Spice Court, and authentic Ghewar from Sodhani Sweets.</div>
+        </div>
+      </div>
+
+      <div class="stop">
+        <div class="stop-marker">3</div>
+        <div class="stop-head"><h3>Culture, Crafts &amp; Sunset Views</h3><span class="stop-cost">₹2,400</span></div>
+        <div class="stop-body">
+          <div class="stop-part"><span class="k">Morning</span>Visit Albert Hall Museum to marvel at its Indo-Saracenic architecture and rich historical artifacts.</div>
+          <div class="stop-part"><span class="k">Afternoon</span>Explore the peaceful Royal Gaitor Tombs and stroll through the lush Sisodia Rani Garden.</div>
+          <div class="stop-part"><span class="k">Evening</span>Head up to Nahargarh Fort for a stunning sunset overlooking the entire cityscape.</div>
+          <div class="stop-food"><strong>Food:</strong> Gatte ki Sabzi and Ker Sangri at Handi Restaurant, paired with masala chai at Tapri Central.</div>
+        </div>
+      </div>
+
+      <div class="stop">
+        <div class="stop-marker">4</div>
+        <div class="stop-head"><h3>Spiritual Marvels &amp; Local Flavors</h3><span class="stop-cost">₹2,200</span></div>
+        <div class="stop-body">
+          <div class="stop-part"><span class="k">Morning</span>Visit the white marble Birla Mandir and pay respects at the historic Moti Dungri Ganesh Temple.</div>
+          <div class="stop-part"><span class="k">Afternoon</span>Take an excursion to Galtaji Temple, an ancient pilgrimage site known for its sacred water tanks.</div>
+          <div class="stop-part"><span class="k">Evening</span>Enjoy last-minute street shopping at Chandpole Bazaar and relax at a cozy heritage café.</div>
+          <div class="stop-food"><strong>Food:</strong> Mirchi Vada and Mawa Kachori at Jodhpur Sweets, followed by a Rajasthani thali at Thali House.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="budget">
+    <span class="eyebrow">04 — Budget Check</span>
+    <h2>Does the output actually match the input?</h2>
+    <table class="budget-table">
+      <tr><td>Day 1 — Royal Heritage &amp; Majestic Forts</td><td>₹2,600</td></tr>
+      <tr><td>Day 2 — Pink City Landmarks &amp; Bazaars</td><td>₹2,500</td></tr>
+      <tr><td>Day 3 — Culture, Crafts &amp; Sunset Views</td><td>₹2,400</td></tr>
+      <tr><td>Day 4 — Spiritual Marvels &amp; Local Flavors</td><td>₹2,200</td></tr>
+      <tr class="total"><td>Average per day</td><td>₹2,425</td></tr>
+    </table>
+    <div class="avg-check">✓ ₹2,425/day average against a ₹2,500/day input — within budget, no silent overrun.</div>
+  </section>
+
+  <section id="approach">
+    <span class="eyebrow">05 — Approach</span>
+    <h2>What's actually generating this</h2>
+    <p class="lede">Four inputs drive an LLM-based planning pipeline that grounds each day in real transport data and locally-sourced food picks rather than generic "top 10" lists.</p>
+    <div class="feat-grid">
+      <div class="feat"><div class="num">1</div><h3>Structured prompting</h3><p>Origin, destination, days, and daily budget are turned into a constrained prompt so every day's cost stays inside the traveler's stated range.</p></div>
+      <div class="feat"><div class="num">2</div><h3>Route-aware transport</h3><p>Train, flight, and bus options are pulled in with real timings and fares so the "getting there" step isn't left as an afterthought.</p></div>
+      <div class="feat"><div class="num">3</div><h3>Local-first food picks</h3><p>Food recommendations favor named local institutions over generic "must-try" listicle spots.</p></div>
+      <div class="feat"><div class="num">4</div><h3>Budget reconciliation</h3><p>Daily estimates are summed and checked against the traveler's target so the plan is honest about whether it fits.</p></div>
+    </div>
+    <div style="margin-top:24px;">
+      <span class="eyebrow" style="display:block;margin-bottom:10px;">Stack</span>
+      <div class="stack-row">
+        <span class="chip">LLM planning layer</span>
+        <span class="chip">Transport data API</span>
+        <span class="chip">Notion (docs/portfolio)</span>
+        <span class="chip">Prompt templates</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="next">
+    <span class="eyebrow">06 — What's Next</span>
+    <h2>Known gaps, honestly</h2>
+    <div class="feat-grid">
+      <div class="feat"><div class="num">→</div><h3>Live fare refresh</h3><p>Transport costs are point-in-time snapshots today; next step is refreshing them at generation time so they don't go stale.</p></div>
+      <div class="feat"><div class="num">→</div><h3>Multi-city trips</h3><p>Currently single-destination only — chaining cities (e.g. Jaipur → Udaipur) is the next planning unit to support.</p></div>
+      <div class="feat"><div class="num">→</div><h3>Seasonal awareness</h3><p>Itineraries don't yet adjust activity order/timing for extreme heat or monsoon — a clear near-term improvement.</p></div>
+      <div class="feat"><div class="num">→</div><h3>Booking hooks</h3><p>Right now it's plan-only; connecting to actual booking flows for transport/hotels is the logical next layer.</p></div>
+    </div>
+  </section>
+
+  <footer>
+    <span class="eyebrow">Tags</span>
+    <div class="tags">
+      <span class="tag">AI Product</span>
+      <span class="tag">Travel Tech</span>
+      <span class="tag">LLM Applications</span>
+      <span class="tag">India</span>
+    </div>
+    <div class="foot-meta">Created July 30, 2026 · Sample market: Pune → Jaipur</div>
+  </footer>
+</div>
+
+</body>
+</html>
