@@ -2,7 +2,7 @@
 
 An AI-powered web app that turns a simple prompt — starting city, destination, number of days, and daily budget — into a complete, ready-to-follow day-by-day travel itinerary for India.
 
-##What it does
+#What it does
 
 Instead of manually researching routes, attractions, food spots, and budgets across a dozen tabs, users just fill in:
 - **Starting from** (e.g. Pune)
